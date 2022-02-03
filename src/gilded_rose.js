@@ -5,6 +5,54 @@ class Item {
     this.quality = quality;
   }
 }
+/*
+class Appreciating extends Item {
+  constructor(name, sellIn, quality) {
+    super(name, sellIn, quality)
+  }
+}
+
+class Legendary extends Item {
+  constructor(name, sellIn, quality) {
+    super(name, sellIn, quality)
+  }
+  
+}
+*/
+class Depreciating extends Item {
+  constructor(name, sellIn, quality) {
+    super(name, sellIn, quality)
+  }
+  
+}
+
+class Conjured extends Depreciating {
+  constructor(name, sellIn, quality) {
+    super(name, sellIn, quality)
+  }
+
+  decrementQuality(){
+    if (this.quality > 0)
+    this.quality -= 1  
+  }
+
+}
+/*
+class Timelimited extends Appreciating {
+  constructor(name, sellIn, quality) {
+    super(name, sellIn, quality)
+  }
+
+}
+
+class Vintage extends Appreciating {
+  constructor(name, sellIn, quality) {
+    super(name, sellIn, quality)
+  }
+
+}
+*/
+
 
 class Shop {
   constructor(items=[]){
@@ -30,6 +78,9 @@ class Shop {
       if (!this.legendaryItem(item)) {
         item.quality = item.quality - 1;
       }
+    }
+    if (item instanceof Conjured) {
+      item.decrementQuality()
     }
   }
 
@@ -84,6 +135,7 @@ class Shop {
             //DECREMENT ITEM AGAIN
             item.quality = item.quality - 1;
           }
+          if (item instanceof Conjured) item.decrementQuality()
         }
         //YEET BACKSTAGE PASSES QUALITY
       } else {
@@ -115,5 +167,6 @@ class Shop {
 }
 module.exports = {
   Item,
-  Shop
+  Shop,
+  Conjured
 }

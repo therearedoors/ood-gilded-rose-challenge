@@ -1,4 +1,4 @@
-const {Shop, Item} = require('../src/gilded_rose.js');
+const {Shop, Item, Conjured} = require('../src/gilded_rose.js');
 describe("Gilded Rose", function() {
 
   it("1) a normal item decreases in quality", function() {
@@ -128,6 +128,29 @@ describe("Gilded Rose", function() {
       gildedRose.updateQuality()
     }
     expect(gildedRose.updateQuality()).toEqual(expected)
+  })
+
+  it("13) an in date conjured item depreciates twice as fast", function() {
+    const gildedRose = new Shop([ new Conjured("Conjured Mana Cake", 1, 3) ])
+  const items = gildedRose.updateQuality()
+  expect(items[0].quality).toEqual(1)
+  })
+
+  it("14) an out of date conjured item depreciates twice as fast as non-conjured", function() {
+    const gildedRose = new Shop([ new Conjured("Conjured Mana Cake", 0, 5) ])
+  const items = gildedRose.updateQuality()
+  expect(items[0].quality).toEqual(1)
+  })
+
+  it("15) conjured item quality depreciates at expected rate, but stops at 0", function() {
+    const gildedRose = new Shop([ new Conjured("Conjured Mana Cake", 2, 15) ])
+    const conjured = gildedRose.items[0]
+    for (let i=0;i<2;i++) gildedRose.updateQuality()
+    expect(conjured.quality).toEqual(11)
+    for(let i=0;i<2;i++) gildedRose.updateQuality()
+    expect(conjured.quality).toEqual(3)
+    gildedRose.updateQuality()
+    expect(conjured.quality).toEqual(0)
   })
 
 });
