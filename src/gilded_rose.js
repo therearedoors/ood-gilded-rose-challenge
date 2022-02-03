@@ -1,146 +1,112 @@
 class Item {
-  constructor(name, sellIn, quality){
-    this.name = name;
-    this.sellIn = sellIn;
-    this.quality = quality;
+  constructor (name, sellIn, quality) {
+    this.name = name
+    this.sellIn = sellIn
+    this.quality = quality
   }
 }
 
 class Shop {
-  constructor(items=[]){
-    this.items = items;
+  constructor (items = []) {
+    this.items = items
   }
 
-  updateQuality() {
-    for (const item of this.items){
-      item.processSellIn()
-      item.updateSellInValue()
-      item.processExpired()
+  updateQuality () {
+    for (const item of this.items) {
+      item.updateQualityDefault()
+      item.updateSellIn()
+      item.updateQualityForExpired()
     }
-    return this.items;
+    return this.items
   }
 }
 
 class Common extends Item {
-    constructor(name, sellIn, quality) {
-    super(name, sellIn, quality)
-    }
+  updateQualityDefault () {
+  }
 
-    processSellIn(){
+  updateSellIn () {
+    this.sellIn = this.sellIn - 1
+  }
 
-    }
+  pastSellInDay (n) {
+    return this.sellIn < n
+  }
 
-    updateSellInValue() {
-      this.sellIn = this.sellIn - 1;
+  decrementQuality () {
+    if (this.quality > 0) {
+      this.quality -= 1
     }
+  }
 
-    processExpired(){
-
-    }
-
-    passedSellInDay(n){
-      return this.sellIn < n
-    }
-
-    decrementQuality(){
-      if (this.quality > 0) this.quality -= 1
-    }
-  
-    incrementQuality(item){
-      if (this.quality < 50) this.quality += 1
-    }
-  
+  incrementQuality () {
+    if (this.quality < 50) this.quality += 1
+  }
 }
 
 class Legendary extends Item {
-  constructor(name, sellIn, quality) {
-    super(name, sellIn, quality)
+  updateQualityDefault () {
   }
 
-  processSellIn(){
+  updateSellIn () {
   }
-  
-  updateSellInValue() {
+
+  updateQualityForExpired () {
   }
-  
-  processExpired(){
-  }
-  
 }
 
 class Depreciating extends Common {
-  constructor(name, sellIn, quality) {
-    super(name, sellIn, quality)
+  updateQualityDefault () {
+    this.processQualityDecrement()
   }
 
-  processSellIn(){
+  processQualityDecrement () {
     this.decrementQuality()
-    }
-  
-    processExpired(){
-      if (this.passedSellInDay(0)) this.decrementQuality()
-    }
+  }
+
+  updateQualityForExpired () {
+    if (this.pastSellInDay(0)) this.processQualityDecrement()
+  }
 }
 
 class Conjured extends Depreciating {
-    constructor(name, sellIn, quality) {
-     super(name, sellIn, quality)
+  processQualityDecrement () {
+    for (let i = 0; i < 2; i++) {
+      if (this.quality > 0) this.quality -= 1
     }
-  
-    processSellIn(){
-      for (let i=0; i<2; i++) this.decrementQuality()
-    }
-  
-    processExpired(){
-      if (this.passedSellInDay(0)){
-        for (let i=0; i<2; i++) this.decrementQuality()
-      }
-    }
+  }
 }
 
 class Appreciating extends Common {
-  constructor(name, sellIn, quality) {
-    super(name, sellIn, quality)
-  }
-
-  processSellIn(){
+  updateQualityDefault () {
     this.processQualityIncrement()
   }
-
 }
 
 class Timelimited extends Appreciating {
-  constructor(name, sellIn, quality) {
-    super(name, sellIn, quality)
-  }
-
-  processQualityIncrement(){
+  processQualityIncrement () {
     this.incrementQuality()
-    if (this.passedSellInDay(11)) {
+    if (this.pastSellInDay(11)) {
       this.incrementQuality()
     }
-    if (this.passedSellInDay(6)) {
+    if (this.pastSellInDay(6)) {
       this.incrementQuality()
-      }
+    }
   }
 
-  processExpired(){
-    if (this.passedSellInDay(0)) this.quality = this.quality - this.quality
+  updateQualityForExpired () {
+    if (this.pastSellInDay(0)) this.quality = this.quality - this.quality
   }
 }
 
 class Vintage extends Appreciating {
-  constructor(name, sellIn, quality) {
-    super(name, sellIn, quality)
-  }
-  
-    processQualityIncrement(){
+  processQualityIncrement () {
     this.incrementQuality()
-    }
-  
-    processExpired(){
-      if (this.passedSellInDay(0)) this.incrementQuality()
-    }
+  }
+
+  updateQualityForExpired () {
+    if (this.pastSellInDay(0)) this.incrementQuality()
+  }
 }
 
 module.exports = {
@@ -149,5 +115,5 @@ module.exports = {
   Timelimited,
   Legendary,
   Vintage,
-  Depreciating,
+  Depreciating
 }
