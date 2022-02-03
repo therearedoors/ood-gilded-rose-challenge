@@ -13,23 +13,11 @@ class Shop {
 
   updateQuality() {
     for (const item of this.items){
-      item.processSellIn(item)
-      item.updateSellInValue(item)
-      item.processExpired(item)
+      item.processSellIn()
+      item.updateSellInValue()
+      item.processExpired()
     }
     return this.items;
-  }
-
-  static passedSellInDay(item,n){
-    return item.sellIn < n
-  }
-
-  static decrementQuality(item){
-    if (item.quality > 0) item.quality = item.quality - 1
-  }
-
-  static incrementQuality(item){
-    if (item.quality < 50) item.quality = item.quality + 1;
   }
 }
 
@@ -38,7 +26,7 @@ class Common extends Item {
     super(name, sellIn, quality)
     }
 
-    processSellIn(item){
+    processSellIn(){
 
     }
 
@@ -46,8 +34,20 @@ class Common extends Item {
       this.sellIn = this.sellIn - 1;
     }
 
-    processExpired(item){
+    processExpired(){
 
+    }
+
+    passedSellInDay(n){
+      return this.sellIn < n
+    }
+
+    decrementQuality(){
+      if (this.quality > 0) this.quality -= 1
+    }
+  
+    incrementQuality(item){
+      if (this.quality < 50) this.quality += 1
     }
   
 }
@@ -58,15 +58,12 @@ class Legendary extends Item {
   }
 
   processSellIn(){
-    return this
   }
   
   updateSellInValue() {
-    return this
   }
   
   processExpired(){
-    return this
   }
   
 }
@@ -76,12 +73,12 @@ class Depreciating extends Common {
     super(name, sellIn, quality)
   }
 
-  processSellIn(item){
-    Shop.decrementQuality(this)
+  processSellIn(){
+    this.decrementQuality()
     }
   
     processExpired(){
-      if (Shop.passedSellInDay(this, 0)) Shop.decrementQuality(this)
+      if (this.passedSellInDay(0)) this.decrementQuality()
     }
 }
 
@@ -91,21 +88,14 @@ class Conjured extends Depreciating {
     }
   
     processSellIn(){
-      for (let i=0; i<2; i++) Shop.decrementQuality(this)
+      for (let i=0; i<2; i++) this.decrementQuality()
     }
   
-    processExpired(item){
-      if (Shop.passedSellInDay(item, 0)) {
-        this.updateExpiredItems(item)
+    processExpired(){
+      if (this.passedSellInDay(0)){
+        for (let i=0; i<2; i++) this.decrementQuality()
       }
     }
-  
-    updateExpiredItems() {
-      if (Shop.passedSellInDay(this,0)){
-      for (let i=0; i<2; i++) Shop.decrementQuality(this)
-      }
-    }
-    
 }
 
 class Appreciating extends Common {
@@ -125,19 +115,17 @@ class Timelimited extends Appreciating {
   }
 
   processQualityIncrement(){
-    Shop.incrementQuality(this)
-    if (Shop.passedSellInDay(this, 11)) {
-      Shop.incrementQuality(this)
+    this.incrementQuality()
+    if (this.passedSellInDay(11)) {
+      this.incrementQuality()
     }
-    if (Shop.passedSellInDay(this, 6)) {
-      Shop.incrementQuality(this)
+    if (this.passedSellInDay(6)) {
+      this.incrementQuality()
       }
   }
 
-  processExpired(item){
-    if (Shop.passedSellInDay(item, 0)) {
-      item.quality = item.quality - item.quality;
-    }
+  processExpired(){
+    if (this.passedSellInDay(0)) this.quality = this.quality - this.quality
   }
 }
 
@@ -147,15 +135,14 @@ class Vintage extends Appreciating {
   }
   
     processQualityIncrement(){
-    Shop.incrementQuality(this)
+    this.incrementQuality()
     }
   
     processExpired(){
-      if (Shop.passedSellInDay(this, 0)) {
-        Shop.incrementQuality(this)
-      }
+      if (this.passedSellInDay(0)) this.incrementQuality()
     }
 }
+
 module.exports = {
   Shop,
   Conjured,
