@@ -1,4 +1,4 @@
-const {Shop, Item, Depreciating, Legendary, Timelimited, Vintage, Conjured} = require('../src/gilded_rose.js');
+const {Shop, Depreciating, Legendary, Timelimited, Vintage, Conjured} = require('../src/gilded_rose.js');
 describe("Gilded Rose", function() {
 
   it("1) a normal item decreases in quality", function() {
