@@ -6,109 +6,46 @@ class Item {
   }
 }
 
+class Shop {
+  constructor(items=[]){
+    this.items = items;
+  }
+
+  updateQuality() {
+    for (const item of this.items){
+      item.processSellIn(item)
+      item.updateSellInValue(item)
+      item.processExpired(item)
+    }
+    return this.items;
+  }
+
+  static passedSellInDay(item,n){
+    return item.sellIn < n
+  }
+
+  static incrementQuality(item){
+    if (item.quality < 50) {
+      item.quality = item.quality + 1;
+    }
+  }
+}
 
 class Common extends Item {
     constructor(name, sellIn, quality) {
     super(name, sellIn, quality)
     }
-  
-    processSellIn(item){
-      if (!this.appreciatingItem(item)) this.decrementQuality(item)
-      else this.processQualityIncrement(item)
-    }
-  
-    decrementQuality(item) {
-      if (item.quality > 0) {
-        if (!this.legendaryItem(item)) {
-          item.quality = item.quality - 1;
-        }
-      }
-      if (item instanceof Conjured) {
-        item.decrementQuality()
-      }
-    }
-  
-    processQualityIncrement(item){
-      if (item.quality < 50) {
-        item.quality = item.quality + 1
-        if (this.timeLimitedItem(item)) {
-          this.incrementTimeLimitedItem(item)
-        }
-      }
-    }
-  
-    incrementQuality(item){
-      if (item.quality < 50) {
-        item.quality = item.quality + 1;
-      }
-    }
-  
-    incrementTimeLimitedItem(item){
-      if (this.passedSellInDay(item, 11)) {
-        this.incrementQuality(item)
-      }
-      if (this.passedSellInDay(item, 6)) {
-        this.incrementQuality(item)
-        }
-    }
-  
-    updateSellInValue(item) {
-      if (!this.legendaryItem(item)) {
-        item.sellIn = item.sellIn - 1;
-      }
-    }
-  
-    processExpired(item){
-      if (this.passedSellInDay(item, 0)) {
-        this.updateExpiredItems(item)
-      }
-    }
-  
-    passedSellInDay(item, n) {
-      return item.sellIn < n
-    }
-  
-    updateExpiredItems(item) {
-      if (!this.vintageItem(item)) {
-        //OR A BACKSTAGE PASS
-        if (!this.timeLimitedItem(item)) {
-          //AND IF THE ITEM STILL HAS QUALITY 
-          if (item.quality > 0) {
-            //AND ISN'T SULFURAS
-            if (!this.legendaryItem(item)) {
-              //DECREMENT ITEM AGAIN
-              item.quality = item.quality - 1;
-            }
-            if (item instanceof Conjured) item.decrementQuality()
-          }
-          //YEET BACKSTAGE PASSES QUALITY
-        } else {
-          item.quality = item.quality - item.quality;
-        }
-        //INCREMENT AGED BRIE AGAIN
-      } else {
-        if (item.quality < 50) {
-          item.quality = item.quality + 1;
-        }
-      }
-    }
-  
-    appreciatingItem(item){
-      return this.timeLimitedItem(item) || this.vintageItem(item)
-    }
-  
-    timeLimitedItem(item){
-      return item.name === 'Backstage passes to a TAFKAL80ETC concert'
-    }
-  
-    vintageItem(item){
-      return item.name === 'Aged Brie'
-    }
-  
-    legendaryItem(item){
-      return item.name === 'Sulfuras, Hand of Ragnaros'
-    }
 
+    processSellIn(item){
+
+    }
+    updateSellInValue(item){
+
+    }
+    processExpired(item){
+
+    }
+  
 }
 
 class Appreciating extends Common {
@@ -116,50 +53,12 @@ class Appreciating extends Common {
     super(name, sellIn, quality)
   }
 
-  processSellIn(item){
-    if (!this.appreciatingItem(item)) this.decrementQuality(item)
-    else this.processQualityIncrement(item)
-  }
-
-  decrementQuality(item) {
-    if (item.quality > 0) {
-      if (!this.legendaryItem(item)) {
-        item.quality = item.quality - 1;
-      }
-    }
-    if (item instanceof Conjured) {
-      item.decrementQuality()
-    }
-  }
-
-  processQualityIncrement(item){
-    if (item.quality < 50) {
-      item.quality = item.quality + 1
-      if (this.timeLimitedItem(item)) {
-        this.incrementTimeLimitedItem(item)
-      }
-    }
-  }
-
-  incrementQuality(item){
-    if (item.quality < 50) {
-      item.quality = item.quality + 1;
-    }
-  }
-
-  incrementTimeLimitedItem(item){
-    if (this.passedSellInDay(item, 11)) {
-      this.incrementQuality(item)
-    }
-    if (this.passedSellInDay(item, 6)) {
-      this.incrementQuality(item)
-      }
+  processSellIn(){
+    this.processQualityIncrement()
   }
 
   updateSellInValue(item) {
-    if (!this.legendaryItem(item)) {
       item.sellIn = item.sellIn - 1;
-    }
   }
 
   processExpired(item){
@@ -168,49 +67,17 @@ class Appreciating extends Common {
     }
   }
 
-  passedSellInDay(item, n) {
-    return item.sellIn < n
-  }
-
   updateExpiredItems(item) {
-    if (!this.vintageItem(item)) {
-      //OR A BACKSTAGE PASS
-      if (!this.timeLimitedItem(item)) {
-        //AND IF THE ITEM STILL HAS QUALITY 
-        if (item.quality > 0) {
-          //AND ISN'T SULFURAS
-          if (!this.legendaryItem(item)) {
-            //DECREMENT ITEM AGAIN
-            item.quality = item.quality - 1;
-          }
-          if (item instanceof Conjured) item.decrementQuality()
-        }
-        //YEET BACKSTAGE PASSES QUALITY
-      } else {
-        item.quality = item.quality - item.quality;
-      }
-      //INCREMENT AGED BRIE AGAIN
-    } else {
-      if (item.quality < 50) {
-        item.quality = item.quality + 1;
-      }
-    }
-  }
-
-  appreciatingItem(item){
-    return this.timeLimitedItem(item) || this.vintageItem(item)
+    if (this.vintageItem(item) && item.quality < 50) item.quality = item.quality + 1
+    if (this.timeLimitedItem(item)) item.quality = item.quality - item.quality
   }
 
   timeLimitedItem(item){
-    return item.name === 'Backstage passes to a TAFKAL80ETC concert'
+    return item instanceof Timelimited
   }
 
   vintageItem(item){
-    return item.name === 'Aged Brie'
-  }
-
-  legendaryItem(item){
-    return item.name === 'Sulfuras, Hand of Ragnaros'
+    return item instanceof Vintage
   }
 }
 
@@ -220,100 +87,15 @@ class Legendary extends Item {
   }
 
   processSellIn(item){
-    if (!this.appreciatingItem(item)) this.decrementQuality(item)
-    else this.processQualityIncrement(item)
+    return item
   }
-
-  decrementQuality(item) {
-    if (item.quality > 0) {
-      if (!this.legendaryItem(item)) {
-        item.quality = item.quality - 1;
-      }
-    }
-    if (item instanceof Conjured) {
-      item.decrementQuality()
-    }
-  }
-
-  processQualityIncrement(item){
-    if (item.quality < 50) {
-      item.quality = item.quality + 1
-      if (this.timeLimitedItem(item)) {
-        this.incrementTimeLimitedItem(item)
-      }
-    }
-  }
-
-  incrementQuality(item){
-    if (item.quality < 50) {
-      item.quality = item.quality + 1;
-    }
-  }
-
-  incrementTimeLimitedItem(item){
-    if (this.passedSellInDay(item, 11)) {
-      this.incrementQuality(item)
-    }
-    if (this.passedSellInDay(item, 6)) {
-      this.incrementQuality(item)
-      }
-  }
-
+  
   updateSellInValue(item) {
-    if (!this.legendaryItem(item)) {
-      item.sellIn = item.sellIn - 1;
-    }
+    return item
   }
-
+  
   processExpired(item){
-    if (this.passedSellInDay(item, 0)) {
-      this.updateExpiredItems(item)
-    }
-  }
-
-  passedSellInDay(item, n) {
-    return item.sellIn < n
-  }
-
-  updateExpiredItems(item) {
-    if (!this.vintageItem(item)) {
-      //OR A BACKSTAGE PASS
-      if (!this.timeLimitedItem(item)) {
-        //AND IF THE ITEM STILL HAS QUALITY 
-        if (item.quality > 0) {
-          //AND ISN'T SULFURAS
-          if (!this.legendaryItem(item)) {
-            //DECREMENT ITEM AGAIN
-            item.quality = item.quality - 1;
-          }
-          if (item instanceof Conjured) item.decrementQuality()
-        }
-        //YEET BACKSTAGE PASSES QUALITY
-      } else {
-        item.quality = item.quality - item.quality;
-      }
-      //INCREMENT AGED BRIE AGAIN
-    } else {
-      if (item.quality < 50) {
-        item.quality = item.quality + 1;
-      }
-    }
-  }
-
-  appreciatingItem(item){
-    return this.timeLimitedItem(item) || this.vintageItem(item)
-  }
-
-  timeLimitedItem(item){
-    return item.name === 'Backstage passes to a TAFKAL80ETC concert'
-  }
-
-  vintageItem(item){
-    return item.name === 'Aged Brie'
-  }
-
-  legendaryItem(item){
-    return item.name === 'Sulfuras, Hand of Ragnaros'
+    return item
   }
   
 }
@@ -324,102 +106,34 @@ class Depreciating extends Common {
   }
 
   processSellIn(item){
-    if (!this.appreciatingItem(item)) this.decrementQuality(item)
-    else this.processQualityIncrement(item)
-  }
-
-  decrementQuality(item) {
-    if (item.quality > 0) {
-      if (!this.legendaryItem(item)) {
-        item.quality = item.quality - 1;
+    this.decrementQuality(item)
+    }
+  
+    decrementQuality(item) {
+      if (item.quality > 0) item.quality = item.quality - 1
+      if (item instanceof Conjured) {
+        item.decrementQuality()
       }
     }
-    if (item instanceof Conjured) {
-      item.decrementQuality()
-    }
-  }
-
-  processQualityIncrement(item){
-    if (item.quality < 50) {
-      item.quality = item.quality + 1
-      if (this.timeLimitedItem(item)) {
-        this.incrementTimeLimitedItem(item)
-      }
-    }
-  }
-
-  incrementQuality(item){
-    if (item.quality < 50) {
-      item.quality = item.quality + 1;
-    }
-  }
-
-  incrementTimeLimitedItem(item){
-    if (this.passedSellInDay(item, 11)) {
-      this.incrementQuality(item)
-    }
-    if (this.passedSellInDay(item, 6)) {
-      this.incrementQuality(item)
-      }
-  }
-
-  updateSellInValue(item) {
-    if (!this.legendaryItem(item)) {
+  
+    updateSellInValue(item) {
       item.sellIn = item.sellIn - 1;
     }
-  }
-
-  processExpired(item){
-    if (this.passedSellInDay(item, 0)) {
-      this.updateExpiredItems(item)
-    }
-  }
-
-  passedSellInDay(item, n) {
-    return item.sellIn < n
-  }
-
-  updateExpiredItems(item) {
-    if (!this.vintageItem(item)) {
-      //OR A BACKSTAGE PASS
-      if (!this.timeLimitedItem(item)) {
-        //AND IF THE ITEM STILL HAS QUALITY 
-        if (item.quality > 0) {
-          //AND ISN'T SULFURAS
-          if (!this.legendaryItem(item)) {
-            //DECREMENT ITEM AGAIN
-            item.quality = item.quality - 1;
-          }
-          if (item instanceof Conjured) item.decrementQuality()
-        }
-        //YEET BACKSTAGE PASSES QUALITY
-      } else {
-        item.quality = item.quality - item.quality;
-      }
-      //INCREMENT AGED BRIE AGAIN
-    } else {
-      if (item.quality < 50) {
-        item.quality = item.quality + 1;
+  
+    processExpired(item){
+      if (Shop.passedSellInDay(this, 0)) {
+        this.updateExpiredItem(item)
       }
     }
-  }
-
-  appreciatingItem(item){
-    return this.timeLimitedItem(item) || this.vintageItem(item)
-  }
-
-  timeLimitedItem(item){
-    return item.name === 'Backstage passes to a TAFKAL80ETC concert'
-  }
-
-  vintageItem(item){
-    return item.name === 'Aged Brie'
-  }
-
-  legendaryItem(item){
-    return item.name === 'Sulfuras, Hand of Ragnaros'
-  }
-
+  
+    passedSellInDay(item, n) {
+      return item.sellIn < n
+    }
+  
+    updateExpiredItem(item) {
+      if (item.quality > 0) item.quality = item.quality - 1
+      if (item instanceof Conjured) item.decrementQuality()
+    }
 }
 
 class Conjured extends Depreciating {
@@ -527,225 +241,37 @@ class Timelimited extends Appreciating {
     super(name, sellIn, quality)
   }
 
-  processSellIn(item){
-    if (!this.appreciatingItem(item)) this.decrementQuality(item)
-    else this.processQualityIncrement(item)
-  }
-
-  decrementQuality(item) {
-    if (item.quality > 0) {
-      if (!this.legendaryItem(item)) {
-        item.quality = item.quality - 1;
+  processQualityIncrement(){
+    Shop.incrementQuality(this)
+    if (Shop.passedSellInDay(this, 11)) {
+      Shop.incrementQuality(this)
+    }
+    if (Shop.passedSellInDay(this, 6)) {
+      Shop.incrementQuality(this)
       }
-    }
-    if (item instanceof Conjured) {
-      item.decrementQuality()
-    }
-  }
-
-  processQualityIncrement(item){
-    if (item.quality < 50) {
-      item.quality = item.quality + 1
-      if (this.timeLimitedItem(item)) {
-        this.incrementTimeLimitedItem(item)
-      }
-    }
-  }
-
-  incrementQuality(item){
-    if (item.quality < 50) {
-      item.quality = item.quality + 1;
-    }
-  }
-
-  incrementTimeLimitedItem(item){
-    if (this.passedSellInDay(item, 11)) {
-      this.incrementQuality(item)
-    }
-    if (this.passedSellInDay(item, 6)) {
-      this.incrementQuality(item)
-      }
-  }
-
-  updateSellInValue(item) {
-    if (!this.legendaryItem(item)) {
-      item.sellIn = item.sellIn - 1;
-    }
   }
 
   processExpired(item){
-    if (this.passedSellInDay(item, 0)) {
-      this.updateExpiredItems(item)
+    if (Shop.passedSellInDay(item, 0)) {
+      item.quality = item.quality - item.quality;
     }
   }
-
-  passedSellInDay(item, n) {
-    return item.sellIn < n
-  }
-
-  updateExpiredItems(item) {
-    if (!this.vintageItem(item)) {
-      //OR A BACKSTAGE PASS
-      if (!this.timeLimitedItem(item)) {
-        //AND IF THE ITEM STILL HAS QUALITY 
-        if (item.quality > 0) {
-          //AND ISN'T SULFURAS
-          if (!this.legendaryItem(item)) {
-            //DECREMENT ITEM AGAIN
-            item.quality = item.quality - 1;
-          }
-          if (item instanceof Conjured) item.decrementQuality()
-        }
-        //YEET BACKSTAGE PASSES QUALITY
-      } else {
-        item.quality = item.quality - item.quality;
-      }
-      //INCREMENT AGED BRIE AGAIN
-    } else {
-      if (item.quality < 50) {
-        item.quality = item.quality + 1;
-      }
-    }
-  }
-
-  appreciatingItem(item){
-    return this.timeLimitedItem(item) || this.vintageItem(item)
-  }
-
-  timeLimitedItem(item){
-    return item.name === 'Backstage passes to a TAFKAL80ETC concert'
-  }
-
-  vintageItem(item){
-    return item.name === 'Aged Brie'
-  }
-
-  legendaryItem(item){
-    return item.name === 'Sulfuras, Hand of Ragnaros'
-  }
-
 }
 
 class Vintage extends Appreciating {
   constructor(name, sellIn, quality) {
     super(name, sellIn, quality)
   }
-
-    processSellIn(item){
-      if (!this.appreciatingItem(item)) this.decrementQuality(item)
-      else this.processQualityIncrement(item)
+  
+    processQualityIncrement(){
+    Shop.incrementQuality(this)
     }
   
-    decrementQuality(item) {
-      if (item.quality > 0) {
-        if (!this.legendaryItem(item)) {
-          item.quality = item.quality - 1;
-        }
-      }
-      if (item instanceof Conjured) {
-        item.decrementQuality()
+    processExpired(){
+      if (Shop.passedSellInDay(this, 0)) {
+        Shop.incrementQuality(this)
       }
     }
-  
-    processQualityIncrement(item){
-      if (item.quality < 50) {
-        item.quality = item.quality + 1
-        if (this.timeLimitedItem(item)) {
-          this.incrementTimeLimitedItem(item)
-        }
-      }
-    }
-  
-    incrementQuality(item){
-      if (item.quality < 50) {
-        item.quality = item.quality + 1;
-      }
-    }
-  
-    incrementTimeLimitedItem(item){
-      if (this.passedSellInDay(item, 11)) {
-        this.incrementQuality(item)
-      }
-      if (this.passedSellInDay(item, 6)) {
-        this.incrementQuality(item)
-        }
-    }
-  
-    updateSellInValue(item) {
-      if (!this.legendaryItem(item)) {
-        item.sellIn = item.sellIn - 1;
-      }
-    }
-  
-    processExpired(item){
-      if (this.passedSellInDay(item, 0)) {
-        this.updateExpiredItems(item)
-      }
-    }
-  
-    passedSellInDay(item, n) {
-      return item.sellIn < n
-    }
-  
-    updateExpiredItems(item) {
-      if (!this.vintageItem(item)) {
-        //OR A BACKSTAGE PASS
-        if (!this.timeLimitedItem(item)) {
-          //AND IF THE ITEM STILL HAS QUALITY 
-          if (item.quality > 0) {
-            //AND ISN'T SULFURAS
-            if (!this.legendaryItem(item)) {
-              //DECREMENT ITEM AGAIN
-              item.quality = item.quality - 1;
-            }
-            if (item instanceof Conjured) item.decrementQuality()
-          }
-          //YEET BACKSTAGE PASSES QUALITY
-        } else {
-          item.quality = item.quality - item.quality;
-        }
-        //INCREMENT AGED BRIE AGAIN
-      } else {
-        if (item.quality < 50) {
-          item.quality = item.quality + 1;
-        }
-      }
-    }
-  
-    appreciatingItem(item){
-      return this.timeLimitedItem(item) || this.vintageItem(item)
-    }
-  
-    timeLimitedItem(item){
-      return item.name === 'Backstage passes to a TAFKAL80ETC concert'
-    }
-  
-    vintageItem(item){
-      return item.name === 'Aged Brie'
-    }
-  
-    legendaryItem(item){
-      return item.name === 'Sulfuras, Hand of Ragnaros'
-    }
-
-}
-
-
-
-class Shop {
-  constructor(items=[]){
-    this.items = items;
-  }
-
-  updateQuality() {
-    for (const item of this.items){
-      item.processSellIn(item)
-      item.updateSellInValue(item)
-      item.processExpired(item)
-    }
-    return this.items;
-  }
-
 }
 module.exports = {
   Item,
@@ -754,5 +280,6 @@ module.exports = {
   Timelimited,
   Legendary,
   Vintage,
+  Depreciating,
   Common
 }
