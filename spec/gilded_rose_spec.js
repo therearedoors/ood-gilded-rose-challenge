@@ -15,7 +15,7 @@ describe("Gilded Rose", function() {
     for (let i = 0; i < 4; i++) {
       gildedRose.updateQuality()
     }
-  const items = gildedRose.updateQuality();
+  gildedRose.updateQuality();
   expect(firstItemOf(gildedRose).quality).toEqual(35)
   expect(firstItemOf(gildedRose).sellIn).toEqual(0)
   })
@@ -31,13 +31,13 @@ describe("Gilded Rose", function() {
 
   it("4) sulfuras can't decrease in quality", function() {
     const gildedRose = new Shop([ new Legendary("Sulfuras, Hand of Ragnaros", 1, 80) ]);
-  const items = gildedRose.updateQuality();
+  gildedRose.updateQuality();
   expect(firstItemOf(gildedRose).quality).toEqual(80)
   })
 
   it("5) aged Brie increases in quality", function() {
     const gildedRose = new Shop([ new Vintage("Aged Brie", 1, 20) ]); 
-  const items = gildedRose.updateQuality();
+  gildedRose.updateQuality();
   expect(firstItemOf(gildedRose).quality).toEqual(21)
   })
 
@@ -56,20 +56,20 @@ describe("Gilded Rose", function() {
 
   it("8) backstage passes increase further value 10 days before the concert", function() {
     const gildedRose = new Shop([ new Timelimited('Backstage passes to a TAFKAL80ETC concert', 10, 5) ])
-  const items = gildedRose.updateQuality()
+  gildedRose.updateQuality()
   expect(firstItemOf(gildedRose).quality).toEqual(7)
   })
 
   it("9) backstage passes increase even further value 5 days before the concert", function() {
     const gildedRose = new Shop([ new Timelimited('Backstage passes to a TAFKAL80ETC concert', 5, 5) ])
-  const items = gildedRose.updateQuality()
+  gildedRose.updateQuality()
   expect(firstItemOf(gildedRose).quality).toEqual(8)
   })
 
   it("10) backstage passes are worthless after the concert", function() {
     const gildedRose = new Shop([ new Timelimited("Backstage passes to a TAFKAL80ETC concert", 0, 50) ])
-  gildedRose.updateQuality()
-  expect(firstItemOf(gildedRose).quality).toEqual(0)
+    gildedRose.updateQuality()
+    expect(firstItemOf(gildedRose).quality).toEqual(0)
   })
 
   it("11) deals with a large input", () => {
@@ -134,14 +134,14 @@ describe("Gilded Rose", function() {
 
   it("13) an in date conjured item depreciates twice as fast", function() {
     const gildedRose = new Shop([ new Conjured("Conjured Mana Cake", 1, 3) ])
-  const items = gildedRose.updateQuality()
-  expect(firstItemOf(gildedRose).quality).toEqual(1)
+    gildedRose.updateQuality()
+    expect(firstItemOf(gildedRose).quality).toEqual(1)
   })
 
   it("14) an out of date conjured item depreciates twice as fast as non-conjured", function() {
     const gildedRose = new Shop([ new Conjured("Conjured Mana Cake", 0, 5) ])
-  const items = gildedRose.updateQuality()
-  expect(firstItemOf(gildedRose).quality).toEqual(1)
+    gildedRose.updateQuality()
+    expect(firstItemOf(gildedRose).quality).toEqual(1)
   })
 
   it("15) conjured item quality depreciates at expected rate, but stops at 0", function() {
