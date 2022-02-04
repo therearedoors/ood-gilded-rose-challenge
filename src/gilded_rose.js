@@ -13,30 +13,37 @@ class Shop {
 
   updateQuality () {
     for (const item of this.items) {
-      item.updateQualityDefault()
-      item.updateSellIn()
-      item.updateQualityForExpired()
+      item.updateSellInValue()
+      item.updateQualityInDefaultCase()
+      item.updateQualityIfExpired()
     }
     return this.items
   }
 }
 
 class Common extends Item {
-  updateQualityDefault () {
-  }
-
-  updateSellIn () {
+  updateSellInValue () {
     this.sellIn = this.sellIn - 1
   }
 
-  pastSellInDay (n) {
+  processQualityDecrement () {
+    this.decrementQuality()
+  }
+
+  updateQualityInDefaultCase () {
+    this.processQualityDecrement()
+  }
+
+  updateQualityIfExpired () {
+    if (this.isPastSellInValue(0)) this.processQualityDecrement()
+  }
+
+  isPastSellInValue (n) {
     return this.sellIn < n
   }
 
   decrementQuality () {
-    if (this.quality > 0) {
-      this.quality -= 1
-    }
+    if (this.quality > 0) this.quality -= 1
   }
 
   incrementQuality () {
@@ -45,31 +52,14 @@ class Common extends Item {
 }
 
 class Legendary extends Item {
-  updateQualityDefault () {
-  }
+  updateQualityInDefaultCase() {}
 
-  updateSellIn () {
-  }
+  updateSellInValue() {}
 
-  updateQualityForExpired () {
-  }
+  updateQualityIfExpired() {}
 }
 
-class Depreciating extends Common {
-  updateQualityDefault () {
-    this.processQualityDecrement()
-  }
-
-  processQualityDecrement () {
-    this.decrementQuality()
-  }
-
-  updateQualityForExpired () {
-    if (this.pastSellInDay(0)) this.processQualityDecrement()
-  }
-}
-
-class Conjured extends Depreciating {
+class Conjured extends Common {
   processQualityDecrement () {
     for (let i = 0; i < 2; i++) {
       if (this.quality > 0) this.quality -= 1
@@ -77,43 +67,39 @@ class Conjured extends Depreciating {
   }
 }
 
-class Appreciating extends Common {
-  updateQualityDefault () {
-    this.processQualityIncrement()
-  }
-}
-
-class Timelimited extends Appreciating {
-  processQualityIncrement () {
+class Timelimited extends Common {
+// 10 DAY AND 5 DAY SPECIFIICTY HARD CODED HERE - UNSURE WHAT A BETTER REFACTORING WOULD
+// LOOK LIKE, BESIDES PASSING EXTRA VALUES TO CONSTRUCTOR/ CREATING AN EDITABLE CONSTANT
+  updateQualityInDefaultCase () {
     this.incrementQuality()
-    if (this.pastSellInDay(11)) {
+    if (this.isPastSellInValue(10)) {
       this.incrementQuality()
     }
-    if (this.pastSellInDay(6)) {
+    if (this.isPastSellInValue(5)) {
       this.incrementQuality()
     }
   }
-
-  updateQualityForExpired () {
-    if (this.pastSellInDay(0)) this.quality = this.quality - this.quality
+// ALTERNATIVE HERE WOULD BE TO SIMPLY SET VALUE TO ZERO
+  updateQualityIfExpired () {
+    if (this.isPastSellInValue(1)) this.quality = this.quality - this.quality
   }
 }
 
-class Vintage extends Appreciating {
-  processQualityIncrement () {
+class Vintage extends Common {
+  updateQualityInDefaultCase () {
     this.incrementQuality()
   }
 
-  updateQualityForExpired () {
-    if (this.pastSellInDay(0)) this.incrementQuality()
+  updateQualityIfExpired () {
+    if (this.isPastSellInValue(0)) this.incrementQuality()
   }
 }
 
 module.exports = {
   Shop,
+  Common,
   Conjured,
   Timelimited,
   Legendary,
-  Vintage,
-  Depreciating
+  Vintage
 }
