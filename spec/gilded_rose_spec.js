@@ -1,11 +1,13 @@
 const {Shop, Common, Legendary, Timelimited, Vintage, Conjured} = require('../src/gilded_rose.js');
 describe("Gilded Rose", function() {
 
+  const firstItemOf = (shop) => shop.items[0]
+
   it("1) a normal item decreases in quality", function() {
     const gildedRose = new Shop([ new Common("random", 1, 40) ]); 
-  const items = gildedRose.updateQuality();
-  expect(items[0].quality).toEqual(39)
-  expect(items[0].sellIn).toEqual(0)
+  gildedRose.updateQuality();
+  expect(firstItemOf(gildedRose).quality).toEqual(39)
+  expect(firstItemOf(gildedRose).sellIn).toEqual(0)
   })
 
   it("2) an in-date normal item decreases in quality", function() {
@@ -14,8 +16,8 @@ describe("Gilded Rose", function() {
       gildedRose.updateQuality()
     }
   const items = gildedRose.updateQuality();
-  expect(items[0].quality).toEqual(35)
-  expect(items[0].sellIn).toEqual(0)
+  expect(firstItemOf(gildedRose).quality).toEqual(35)
+  expect(firstItemOf(gildedRose).sellIn).toEqual(0)
   })
 
   it("3) an expired normal item decreases in quality two times as fast", function() {
@@ -23,51 +25,51 @@ describe("Gilded Rose", function() {
   gildedRose.updateQuality();
   gildedRose.updateQuality();
   gildedRose.updateQuality();
-  expect(gildedRose.items[0].quality).toEqual(35)
-  expect(gildedRose.items[0].sellIn).toEqual(-2)
+  expect(firstItemOf(gildedRose).quality).toEqual(35)
+  expect(firstItemOf(gildedRose).sellIn).toEqual(-2)
   })
 
   it("4) sulfuras can't decrease in quality", function() {
     const gildedRose = new Shop([ new Legendary("Sulfuras, Hand of Ragnaros", 1, 80) ]);
   const items = gildedRose.updateQuality();
-  expect(items[0].quality).toEqual(80)
+  expect(firstItemOf(gildedRose).quality).toEqual(80)
   })
 
   it("5) aged Brie increases in quality", function() {
     const gildedRose = new Shop([ new Vintage("Aged Brie", 1, 20) ]); 
   const items = gildedRose.updateQuality();
-  expect(items[0].quality).toEqual(21)
+  expect(firstItemOf(gildedRose).quality).toEqual(21)
   })
 
   it("6) expired aged Brie increases in quality twice as fast", function() {
     const gildedRose = new Shop([ new Vintage("Aged Brie", 1, 20) ])
     gildedRose.updateQuality()
     gildedRose.updateQuality()
-  expect(gildedRose.items[0].quality).toEqual(23)
+  expect(firstItemOf(gildedRose).quality).toEqual(23)
   })
 
   it("7) backstage passes increase in value before the concert", function() {
     const gildedRose = new Shop([ new Timelimited('Backstage passes to a TAFKAL80ETC concert', 11, 5) ])
   gildedRose.updateQuality()
-  expect(gildedRose.items[0].quality).toEqual(6)
+  expect(firstItemOf(gildedRose).quality).toEqual(6)
   })
 
   it("8) backstage passes increase further value 10 days before the concert", function() {
     const gildedRose = new Shop([ new Timelimited('Backstage passes to a TAFKAL80ETC concert', 10, 5) ])
   const items = gildedRose.updateQuality()
-  expect(items[0].quality).toEqual(7)
+  expect(firstItemOf(gildedRose).quality).toEqual(7)
   })
 
   it("9) backstage passes increase even further value 5 days before the concert", function() {
     const gildedRose = new Shop([ new Timelimited('Backstage passes to a TAFKAL80ETC concert', 5, 5) ])
   const items = gildedRose.updateQuality()
-  expect(items[0].quality).toEqual(8)
+  expect(firstItemOf(gildedRose).quality).toEqual(8)
   })
 
   it("10) backstage passes are worthless after the concert", function() {
     const gildedRose = new Shop([ new Timelimited("Backstage passes to a TAFKAL80ETC concert", 0, 50) ])
   gildedRose.updateQuality()
-  expect(gildedRose.items[0].quality).toEqual(0)
+  expect(firstItemOf(gildedRose).quality).toEqual(0)
   })
 
   it("11) deals with a large input", () => {
@@ -94,10 +96,10 @@ describe("Gilded Rose", function() {
     new Common("Conjured Mana Cake", 0, 3)
     ]
     const gildedRose = new Shop(inventory)
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 3; i++) {
       gildedRose.updateQuality()
     }
-    expect(gildedRose.updateQuality()).toEqual(expected)
+    expect(gildedRose.items).toEqual(expected)
   })
 
   it("12) deals with a large input over a long time", () => {
@@ -124,33 +126,32 @@ describe("Gilded Rose", function() {
     new Common("Conjured Mana Cake", -27, 0)
     ]
     const gildedRose = new Shop(inventory)
-    for (let i = 0; i < 29; i++) {
+    for (let i = 0; i < 30; i++) {
       gildedRose.updateQuality()
     }
-    expect(gildedRose.updateQuality()).toEqual(expected)
+    expect(gildedRose.items).toEqual(expected)
   })
 
   it("13) an in date conjured item depreciates twice as fast", function() {
     const gildedRose = new Shop([ new Conjured("Conjured Mana Cake", 1, 3) ])
   const items = gildedRose.updateQuality()
-  expect(items[0].quality).toEqual(1)
+  expect(firstItemOf(gildedRose).quality).toEqual(1)
   })
 
   it("14) an out of date conjured item depreciates twice as fast as non-conjured", function() {
     const gildedRose = new Shop([ new Conjured("Conjured Mana Cake", 0, 5) ])
   const items = gildedRose.updateQuality()
-  expect(items[0].quality).toEqual(1)
+  expect(firstItemOf(gildedRose).quality).toEqual(1)
   })
 
   it("15) conjured item quality depreciates at expected rate, but stops at 0", function() {
     const gildedRose = new Shop([ new Conjured("Conjured Mana Cake", 2, 15) ])
-    const conjured = gildedRose.items[0]
     for (let i=0;i<2;i++) gildedRose.updateQuality()
-    expect(conjured.quality).toEqual(11)
+    expect(firstItemOf(gildedRose).quality).toEqual(11)
     for(let i=0;i<2;i++) gildedRose.updateQuality()
-    expect(conjured.quality).toEqual(3)
+    expect(firstItemOf(gildedRose).quality).toEqual(3)
     gildedRose.updateQuality()
-    expect(conjured.quality).toEqual(0)
+    expect(firstItemOf(gildedRose).quality).toEqual(0)
   })
 
 });
